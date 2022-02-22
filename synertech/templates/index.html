@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+      <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <title>시너테크 메모장</title>
+    <meta property="og:title" content="시너테크" />
+    <meta property="og:description" content="시너테크 메모장" />
+    <meta property="og:image" content="{{ url_for('static', filename='images.jpg') }}" />
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Jua&display=swap" rel="stylesheet">
+    <style type="text/css">
+     *{
+            font-family: 'Black Han Sans', sans-serif;
+        }
+     h1,
+     h5 {
+                display: inline;
+            }
+     .wrap{
+           width:600px;
+           margin:auto;
+        }
+     .btn btn-primary btn-lg{
+         margin:auto;
+          }
+     .display-4{
+         color:blue;
+     }
+
+
+     .info {
+         margin-top: 20px;
+         margin-bottom: 20px;
+        }
+
+     .comment {
+         text-align: center;
+        }
+
+     .comments {
+            margin: auto;
+            font-size: small;
+            text-align: center;
+        }
+    </style>
+    <script type="text/javascript">
+        $(document).ready(function () {
+                showComment();
+            });
+
+        function makeComment() {
+            let subject = $('#subject').val()
+            let title = $('#title').val()
+            let comment = $('#comment').val()
+
+            $.ajax({
+                type: "POST",
+                url: "/comment",
+                data: {subject_give : subject,
+                       title_give : title,
+                       comment_give : comment
+                },
+                success: function (response) {
+                    alert(response["msg"]);
+                    window.location.reload();
+                }
+                })
+            }
+        function showComment() {
+            $.ajax({
+                type: "GET",
+                url: "/comment",
+                data: {},
+                success: function (response) {
+                    let comments = response['all_comments']
+
+                    for (let i =0; i < comments.length; i++){
+                        let subject = comments[i]['subject']
+                        let title = comments[i]['title']
+                        let comment = comments[i]['comment']
+
+                        let temp_html =`<tr>
+                                            <td>${subject}</td>
+                                            <td>${title}</td>
+                                            <td>${comment}</td>
+                                         </tr>`
+                        $('#comments-box').append(temp_html)
+                    }
+                }
+            })
+        }
+    </script>
+
+</head>
+<body>
+<div class="wrap">
+    <div class="jumbotron">
+  <h1 class="display-4">Synertech</h1>
+  <p class="lead">이곳은 시너테크 가족들이 의사소통하는 공간입니다.</p>
+  <hr class="my-4">
+  <p> 진행중인 프로젝트나 앞으로의 사업에 관한 내용들을 적어두고 서로 공유할 수 있도록 만들어 놓은 공간입니다. </p>
+  <p> 시너테크 가족 외부 사람들에게 노출 되지 않도록 조심해 주십시오. </p>
+
+</div>
+    <div class="info">
+                <h1>해야 할 업무를 말씀해주세요.</h1>
+                <p>진행예정인 사업이나 진행중인 업무에 관해 자유롭게 남겨주세요</p>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">작성자</span>
+                    </div>
+                    <input type="text" class="form-control" id="subject">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">제목</span>
+                    </div>
+                    <input type="text" class="form-control" id="title">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">내용</span>
+                    </div>
+                    <textarea class="form-control" id="comment"
+                              cols="30"
+                              rows="5" placeholder="140자까지 입력할 수 있습니다."></textarea>
+                </div>
+                <div class="comment">
+                    <button onclick="makeComment()" type="button" class="btn btn-primary">작성하기</button>
+                </div>
+            </div>
+            <div class="comments">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">작성자</th>
+                        <th scope="col">제목</th>
+                        <th scope="col">내용</th>
+                    </tr>
+                    </thead>
+                    <tbody id="comments-box">
+                    <tr>
+                        <td>김은아</td>
+                        <td>2022년 국가사업</td>
+                        <td>(예시)기존 보유하고 있는 특허와 관련하여 중소기업청에서 지원하는 사업에 공모하고자 합니다.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+</div>
+
+</body>
+</html>
